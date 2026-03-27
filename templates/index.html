@@ -5,6 +5,44 @@
 </head>
 <body>
     <h1>Disaster Alert System</h1>
-    <p>Backend working ✅</p>
+
+    <h3>Report Disaster</h3>
+    <input id="type" placeholder="Type (Flood/Fire)">
+    <input id="location" placeholder="Location">
+    <button onclick="sendAlert()">Submit</button>
+
+    <h3>All Alerts</h3>
+    <ul id="alerts"></ul>
+
+    <script>
+        async function sendAlert() {
+            const type = document.getElementById("type").value;
+            const location = document.getElementById("location").value;
+
+            await fetch('/report', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type, location})
+            });
+
+            loadAlerts();
+        }
+
+        async function loadAlerts() {
+            const res = await fetch('/alerts');
+            const data = await res.json();
+
+            const list = document.getElementById("alerts");
+            list.innerHTML = "";
+
+            data.forEach(alert => {
+                const li = document.createElement("li");
+                li.innerText = alert.type + " - " + alert.location;
+                list.appendChild(li);
+            });
+        }
+
+        loadAlerts();
+    </script>
 </body>
 </html>
